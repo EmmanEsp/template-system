@@ -1,22 +1,18 @@
 const User = require('../models/user');
 
-const authLogin = async (req, res) => {
-    try {
-        const user = await User.findByCredentials(
-            req.body.email,
-            req.body.password
-        );
+async function authLogin(email, password) {
 
-        const token = await user.generateAuthToken();
+    const user = await User.findByCredentials(
+        email,
+        password
+    );
 
-        res.send({ user, token });
+    const token = await user.generateAuthToken();
 
-    } catch(ex) {
-        res.status(400).send(ex.message);
-    }
+    return { user, token }; 
 }
 
-const authLogout = async (Req, res) => {
+async function authLogout(req, res) {
 
 }
 
