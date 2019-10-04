@@ -1,74 +1,42 @@
 const User = require('../models/user');
 const allowedUpdates = require('../models/userFields');
 
-const postUser = async (req, res) => {
-    try { 
-        const user = new User(req.body);
-        await user.save();
+async function postUser(newUser) { 
+    
+    const user = new User(newUser);
+    
+    await user.save();
 
-        res.status(201).send({ user });
-
-    } catch(ex) {
-        res.status(400).send(ex);
-    }
+    return user;
 }
 
-const getUsers = async (req, res) => {
-    try {
-        const users = await User.find({});
-        
-        res.send(users);
-
-    } catch(ex) {
-        res.status(500).send(ex);
-    }
+async function getUsers() { 
+    return await User.find({}); 
 }
 
-const getUser = async (req, res) => {
-    try {
-        const _id = req.params.id;
-        const user = await User.findById(_id);
-        
-        if(!user) {
-            return res.status(404).send();
-        }
-
-        res.send(user);
-
-    } catch(ex) {
-        res.status(500).send();
-    }
+async function getUser(_id) {  
+    return await User.findById(_id);
 }
 
-const updateUser = async (req, res) => {
-    try {
-        const updates = Object.keys(req.body);
-        
-        const isValidOperation = updates.every((update) =>
-            allowedUpdates.includes(update)
-        );
+async function updateUser(values, user) {
+    
+    const updates = Object.keys(values);
+    
+    const isValidOperation = updates.every((update) =>
+        allowedUpdates.includes(update)
+    );
 
-        if(!isValidOperation) {
-            return res.status(400).send({ error: 'Invalid Update'});
-        }
-
-        const user = req.user;
-
-        updates.forEach((update) =>
-            user[update] = req.body[update]
-        );
-
-        await user.save();
-
-        if(!user) {
-            return res.status(404).send();
-        }
-
-        res.status(200).send(user);
-
-    } catch(ex) {
-        res.status(400).send(ex);
+    if(!isValidOperation) {
+        throw new error('Invalid Update');
     }
+
+    updates.forEach((update) =>
+        user[update] = values[update]
+    );
+
+    await user.save();
+
+    return user; 
 }
 
 module.exports = {
@@ -76,4 +44,4 @@ module.exports = {
     getUsers,
     getUser,
     updateUser
-}
+} 
