@@ -1,6 +1,6 @@
 const express = require('express');
 const router = new express.Router();
-const { authLogin } = require('../business/authBusiness');
+const { authLogin } = require('../services/authService');
 
 router.post(
     '/auth/login', 
